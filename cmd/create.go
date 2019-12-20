@@ -36,6 +36,11 @@ var Create = &cobra.Command{
 			jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("Applying migration")),
 		)
 
+		m.Comment("Rollback migration")
+		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Rollback").Params().Block(
+			jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("Rolling back migration")),
+		)
+
 		ts := time.Now().Unix()
 
 		m.Comment("Timestamp when migration was created")

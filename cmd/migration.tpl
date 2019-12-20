@@ -13,6 +13,7 @@ var Collection = []Migration{}
 // Migration service
 type Migration interface {
 	Apply()
+	Rollback()
 	Timestamp() int64
 }
 
@@ -30,13 +31,16 @@ func Run() {
 	for _, c := range Collection {
 		if !applied(c) {
 			c.Apply()
+
+			if err := saveMigrationHistory(c); err != nil {
+				c.Rollback()
+			}
 		}
 	}
 }
 
 func applied(mig Migration) bool {
-	// get migrations from database
-	migrations := []*migration{}
+	migrations := getMigrationsHistory()
 
 	for _, m := range migrations {
 		if mig.Timestamp() == m.Timestamp {
@@ -45,4 +49,16 @@ func applied(mig Migration) bool {
 	}
 
 	return false
+}
+
+// To implement!!
+
+func getMigrationsHistory() []*migration {
+	// implement, get migrations from database
+	return []*migration{}
+}
+
+func saveMigrationHistory(migration Migration) error {
+	// implement, store migration in database
+	return nil
 }
