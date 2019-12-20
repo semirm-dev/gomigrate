@@ -7,7 +7,7 @@
 $ go install github.com/semirm-dev/gomigrate
 ```
 
-* generate required templates 
+* generate required templates from your project root
 ```
 $ gomigrate tpl
 ```
