@@ -5,6 +5,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Auto-generated file
+// Feel free to edit
+
 func init() {
 	Migration.AddCommand(Apply)
 }

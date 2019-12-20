@@ -19,7 +19,10 @@ func init() {
 	Migration.AddCommand(Template)
 }
 
-var destination = "migrations"
+var (
+	destination = "migrations"
+	cmdDest     = "cmd"
+)
 
 // WithCmdApply determines whether Apply command tpl should be generated or not
 var WithCmdApply bool
@@ -75,7 +78,7 @@ func createMigrationInterface() {
 
 func createCmdApply() {
 	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/cmd.tpl"
-	dest := "cmd/migration.go"
+	dest := cmdDest + "/migration.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		if err := downloadTpl(from, dest); err != nil {

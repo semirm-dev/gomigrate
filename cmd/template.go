@@ -11,7 +11,7 @@ var Template = &cobra.Command{
 	Short: "Generate templates",
 	Long:  `Generate templates`,
 	Run: func(cmd *cobra.Command, args []string) {
-		createPathIfNotExists("cmd")
+		createPathIfNotExists(cmdDest)
 
 		createMigrationInterface()
 
