@@ -14,7 +14,7 @@ $ gomigrate tpl
 
 * create migration from your project root
 ```
-$ gomigrate --create=MyMigration1
+$ gomigrate create -m=MyMigration1
 ```
 
 * append migrations.Collection with previously created migration
