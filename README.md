@@ -1,2 +1,2 @@
 # gomigrate
-Help with go database migrations (Gorm)
+Migrations scaffolding
