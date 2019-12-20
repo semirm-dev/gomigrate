@@ -13,13 +13,32 @@ type Migration interface {
 	Timestamp() int64
 }
 
+type migration struct {
+	Name      string
+	Timestamp int64
+	Applied   bool
+}
+
 // Run migrations collection
 func Run() {
 	sort.Slice(Collection, func(i, j int) bool {
 		return Collection[i].Timestamp() < Collection[j].Timestamp()
 	})
 
-	for _, m := range Collection {
-		m.Apply()
+	// get migrations from database
+	migrations := []*migration{}
+
+	apply(migrations)
+}
+
+func apply(migrations []*migration) {
+	for _, m := range migrations {
+		if !m.Applied {
+			for _, c := range Collection {
+				if m.Timestamp == c.Timestamp() {
+					c.Apply()
+				}
+			}
+		}
 	}
 }
