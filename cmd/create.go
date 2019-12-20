@@ -24,6 +24,10 @@ var Create = &cobra.Command{
 
 		m := jen.NewFile("migrations")
 
+		m.Comment("Auto-generated file")
+		m.Comment("Feel free to edit")
+		m.Line()
+
 		m.Comment(name + " migration")
 		m.Type().Id(name).Struct()
 

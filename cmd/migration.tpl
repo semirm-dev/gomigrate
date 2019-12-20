@@ -4,6 +4,9 @@ import (
 	"sort"
 )
 
+// Auto-generated file
+// Feel free to edit
+
 // Collection with all migrations
 var Collection = []Migration{}
 
