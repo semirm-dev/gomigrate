@@ -16,7 +16,6 @@ type Migration interface {
 type migration struct {
 	Name      string
 	Timestamp int64
-	Applied   bool
 }
 
 // Run migrations collection
@@ -25,20 +24,22 @@ func Run() {
 		return Collection[i].Timestamp() < Collection[j].Timestamp()
 	})
 
+	for _, c := range Collection {
+		if !applied(c) {
+			c.Apply()
+		}
+	}
+}
+
+func applied(mig Migration) bool {
 	// get migrations from database
 	migrations := []*migration{}
 
-	apply(migrations)
-}
-
-func apply(migrations []*migration) {
 	for _, m := range migrations {
-		if !m.Applied {
-			for _, c := range Collection {
-				if m.Timestamp == c.Timestamp() {
-					c.Apply()
-				}
-			}
+		if mig.Timestamp() == m.Timestamp {
+			return true
 		}
 	}
+
+	return false
 }

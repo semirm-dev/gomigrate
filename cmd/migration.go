@@ -16,8 +16,6 @@ func init() {
 	createMigrationInterface()
 
 	Migration.AddCommand(Create)
-	Migration.AddCommand(Verify)
-	Migration.AddCommand(Apply)
 }
 
 var destination = "migrations"
@@ -61,8 +59,11 @@ func copy(from string, to string) error {
 }
 
 func createMigrationInterface() {
-	if _, err := os.Stat(destination + "/migration.go"); os.IsNotExist(err) {
-		if err := copy("cmd/migration.tpl", destination+"/migration.go"); err != nil {
+	from := "cmd/migration.tpl"
+	dest := destination + "/migration.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		if err := copy(from, dest); err != nil {
 			logrus.Fatal("failed to copy migration.tpl: ", err)
 		}
 	}
