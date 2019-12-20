@@ -1,21 +1,19 @@
 package cmd
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
-	"time"
 
-	"github.com/dave/jennifer/jen"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	if err := createPathIfNotExists(destination); err != nil {
-		logrus.Fatal("failed to create migration.go interface: ", err)
+		logrus.Fatalf("failed to create %s destination: %v", destination, err)
 	}
+
+	createMigrationInterface()
 
 	Migration.AddCommand(Create)
 	Migration.AddCommand(Verify)
@@ -49,42 +47,23 @@ func writeFileContent(name string, content []byte) {
 	}
 }
 
-func createMigration(name string) {
-	m := jen.NewFile("migrations")
+func copy(from string, to string) error {
+	b, err := ioutil.ReadFile(from)
+	if err != nil {
+		return err
+	}
 
-	m.Comment(name + " migration")
-	m.Type().Id(name).Struct()
+	if err := ioutil.WriteFile(to, b, 0644); err != nil {
+		return err
+	}
 
-	m.Comment("Apply migration")
-	m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Apply").Params().Block(
-		jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("Applying migration")),
-	)
-
-	ts := time.Now().Unix()
-
-	m.Comment("Timestamp when migration was created")
-	m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Timestamp").Params().Int64().Block(
-		jen.Return(jen.Lit(ts)),
-	)
-
-	n := strings.ToLower(fmt.Sprint(ts) + "_" + name + ".go")
-	c := []byte(fmt.Sprintf("%#v", m))
-
-	writeFileContent(n, c)
+	return nil
 }
 
 func createMigrationInterface() {
 	if _, err := os.Stat(destination + "/migration.go"); os.IsNotExist(err) {
-		m := jen.NewFile("migrations")
-
-		m.Comment("Collection with all migrations")
-		m.Var().Id("Collection").Op("=").Make(jen.Index().Id("Migration").Op(",").Lit(0))
-
-		m.Comment("Migration service")
-		m.Type().Id("Migration").Interface(jen.Id("Apply").Params(), jen.Id("TimeStamp").Params().Int64())
-
-		c := []byte(fmt.Sprintf("%#v", m))
-
-		writeFileContent("migration.go", c)
+		if err := copy("cmd/migration.tpl", destination+"/migration.go"); err != nil {
+			logrus.Fatal("failed to copy migration.tpl: ", err)
+		}
 	}
 }
