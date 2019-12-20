@@ -65,20 +65,20 @@ func createMigrationInterface() {
 	dest := destination + "/migration.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := downloadTpl(dest, from); err != nil {
+		if err := downloadTpl(from, dest); err != nil {
 			logrus.Fatal("failed to get migration.tpl: ", err)
 		}
 	}
 }
 
-func downloadTpl(filepath string, url string) error {
-	resp, err := http.Get(url)
+func downloadTpl(path string, dest string) error {
+	resp, err := http.Get(path)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	out, err := os.Create(filepath)
+	out, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
