@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -59,12 +61,30 @@ func copy(from string, to string) error {
 }
 
 func createMigrationInterface() {
-	from := "cmd/migration.tpl"
+	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/migration.tpl"
 	dest := destination + "/migration.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := copy(from, dest); err != nil {
-			logrus.Fatal("failed to copy migration.tpl: ", err)
+		if err := downloadTpl(dest, from); err != nil {
+			logrus.Fatal("failed to get migration.tpl: ", err)
 		}
 	}
+}
+
+func downloadTpl(filepath string, url string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+
+	return err
 }
