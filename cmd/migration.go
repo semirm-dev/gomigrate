@@ -24,9 +24,6 @@ var (
 	cmdDest     = "cmd"
 )
 
-// WithCmdApply determines whether Apply command tpl should be generated or not
-var WithCmdApply bool
-
 // Migration root command
 var Migration = &cobra.Command{
 	Use:   "",
