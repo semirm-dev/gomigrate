@@ -1,6 +1,6 @@
 #### Migrations scaffolding
 
-### Usage
+#### Usage
 
 * install gomigrate tool
 ```sh
