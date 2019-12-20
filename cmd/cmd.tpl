@@ -26,6 +26,7 @@ var Apply = &cobra.Command{
 	Short: "Apply migrations",
 	Long:  `Apply migrations`,
 	Run: func(cmd *cobra.Command, args []string) {
+		migrations.Run()
 
 		logrus.Info("migrations applied")
 	},
