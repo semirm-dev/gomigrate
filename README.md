@@ -34,3 +34,8 @@ func main() {
     cmd.Migration.Execute()
 }
 ```
+
+* when ready apply migrations
+```sh
+$ go run main.go migrate
+```
