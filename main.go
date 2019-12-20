@@ -4,10 +4,8 @@ import (
 	"github.com/semirm-dev/gomigrate/cmd"
 )
 
-var migrationName string
-
 func main() {
-	cmd.Create.Flags().StringVar(&migrationName, "migration", "", "migration name")
+	cmd.Create.Flags().StringP("migration", "m", "", "migration name")
 	cmd.Create.MarkFlagRequired("migration")
 
 	cmd.Migration.Execute()

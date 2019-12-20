@@ -15,12 +15,14 @@ func init() {
 		logrus.Fatalf("failed to create %s destination: %v", destination, err)
 	}
 
-	createMigrationInterface()
-
 	Migration.AddCommand(Create)
+	Migration.AddCommand(Template)
 }
 
 var destination = "migrations"
+
+// WithCmdApply determines whether Apply command tpl should be generated or not
+var WithCmdApply bool
 
 // Migration root command
 var Migration = &cobra.Command{
@@ -67,6 +69,17 @@ func createMigrationInterface() {
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		if err := downloadTpl(from, dest); err != nil {
 			logrus.Fatal("failed to get migration.tpl: ", err)
+		}
+	}
+}
+
+func createCmdApply() {
+	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/cmd.tpl"
+	dest := "cmd/migration.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		if err := downloadTpl(from, dest); err != nil {
+			logrus.Fatal("failed to get cmd.tpl: ", err)
 		}
 	}
 }
