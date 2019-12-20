@@ -1,4 +1,3 @@
-# gomigrate
 Migrations scaffolding
 
 ### Usage
