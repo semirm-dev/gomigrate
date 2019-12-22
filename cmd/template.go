@@ -61,10 +61,9 @@ var Template = &cobra.Command{
 			},
 		)
 
-		n := strings.ToLower("migration.go")
 		c := []byte(fmt.Sprintf("%#v", m))
 
-		writeFileContent(cmdDest+"/"+n, c)
+		writeFileContent(cmdDest+"/migration.go", c)
 
 		logrus.Info("templates generated")
 	},
