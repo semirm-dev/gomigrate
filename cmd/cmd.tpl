@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Auto-generated file
+// Auto-generated file: https://github.com/semirm-dev/gomigrate
 // Feel free to edit
 
 func init() {

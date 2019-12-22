@@ -24,7 +24,7 @@ var Create = &cobra.Command{
 
 		m := jen.NewFile("migrations")
 
-		m.Comment("Auto-generated file")
+		m.Comment("Auto-generated file: https://github.com/semirm-dev/gomigrate")
 		m.Comment("Feel free to edit")
 		m.Line()
 

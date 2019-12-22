@@ -4,7 +4,7 @@ import (
 	"sort"
 )
 
-// Auto-generated file
+// Auto-generated file: https://github.com/semirm-dev/gomigrate
 // Feel free to edit
 
 // Collection with all migrations
