@@ -11,8 +11,8 @@ import (
 )
 
 func init() {
-	if err := createPathIfNotExists(destination); err != nil {
-		logrus.Fatalf("failed to create %s destination: %v", destination, err)
+	if err := createPathIfNotExists(migrationsDest); err != nil {
+		logrus.Fatalf("failed to create %s destination: %v", migrationsDest, err)
 	}
 
 	Migration.AddCommand(Create)
@@ -20,8 +20,8 @@ func init() {
 }
 
 var (
-	destination = "migrations"
-	cmdDest     = "cmd"
+	migrationsDest = "migrations"
+	cmdDest        = "cmd"
 )
 
 // Migration root command
@@ -41,10 +41,8 @@ func createPathIfNotExists(path string) error {
 	return nil
 }
 
-func writeFileContent(name string, content []byte) {
-	fName := destination + "/" + name
-
-	if err := ioutil.WriteFile(fName, content, 0644); err != nil {
+func writeFileContent(path string, content []byte) {
+	if err := ioutil.WriteFile(path, content, 0644); err != nil {
 		logrus.Fatal("write content to file failed: ", err)
 	}
 }
@@ -64,7 +62,7 @@ func copy(from string, to string) error {
 
 func createMigrationInterface() {
 	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/migration.tpl"
-	dest := destination + "/migration.go"
+	dest := migrationsDest + "/migration.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		if err := downloadTpl(from, dest); err != nil {
@@ -73,20 +71,9 @@ func createMigrationInterface() {
 	}
 }
 
-func createCmdApply() {
-	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/cmd.tpl"
-	dest := cmdDest + "/migration.go"
-
-	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := downloadTpl(from, dest); err != nil {
-			logrus.Fatal("failed to get cmd.tpl: ", err)
-		}
-	}
-}
-
 func createRegisterMigrationsCollection() {
 	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/registermigrations.tpl"
-	dest := destination + "/registermigrations.go"
+	dest := migrationsDest + "/registermigrations.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		if err := downloadTpl(from, dest); err != nil {

@@ -56,7 +56,7 @@ var Create = &cobra.Command{
 		n := strings.ToLower(fmt.Sprint(ts) + "_" + name + ".go")
 		c := []byte(fmt.Sprintf("%#v", m))
 
-		writeFileContent(n, c)
+		writeFileContent(migrationsDest+"/"+n, c)
 
 		logrus.Info("migration created")
 	},
