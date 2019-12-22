@@ -83,8 +83,6 @@ func applied(mig Migration, migrations []*migration) bool {
 	return false
 }
 
-// To implement!!
-
 func getMigrationsHistory(db *gorm.DB) []*migration {
 	var migrations = []*migration{}
 
