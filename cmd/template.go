@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/dave/jennifer/jen"
@@ -21,14 +22,53 @@ var Template = &cobra.Command{
 
 		createRegisterMigrationsCollection()
 
+		createApplyCmd(cmd)
+
+		logrus.Info("templates generated")
+	},
+}
+
+func createMigrationInterface() {
+	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/migration.tpl"
+	dest := migrationsDest + "/migration.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		if err := downloadTpl(from, dest); err != nil {
+			logrus.Fatal("failed to get migration.tpl: ", err)
+		}
+	}
+}
+
+func createRegisterMigrationsCollection() {
+	dest := migrationsDest + "/registermigrations.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		m := jen.NewFile(migrationsDest)
+
+		m.Comment("Auto-generated file: https://github.com/semirm-dev/gomigrate")
+		m.Comment("Feel free to edit")
+		m.Line()
+
+		m.Comment("Collection with all migrations")
+		m.Var().Id("Collection").Op("=").Index().Qual("", "Migration").Block()
+
+		c := []byte(fmt.Sprintf("%#v", m))
+
+		writeFileContent(dest, c)
+	}
+}
+
+func createApplyCmd(cmd *cobra.Command) {
+	dest := cmdDest + "/migration.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		var pkg = cmd.Flag("pkg").Value.String()
 
 		if strings.TrimSpace(pkg) == "" {
 			logrus.Fatal("invalid github package url")
 		}
 
-		name := "cmd"
-		m := jen.NewFile(name)
+		m := jen.NewFile(cmdDest)
 
 		m.Comment("Auto-generated file: https://github.com/semirm-dev/gomigrate")
 		m.Comment("Feel free to edit")
@@ -55,7 +95,7 @@ var Template = &cobra.Command{
 				jen.Id("Short"): jen.Lit("Apply migrations"),
 				jen.Id("Long"):  jen.Lit("`Apply migrations`"),
 				jen.Id("Run"): jen.Func().Params(jen.Id("cmd").Op("*").Qual("github.com/spf13/cobra", "Command"), jen.Id("agrs").Index().String()).Block(
-					jen.Qual("github.com/"+pkg+"/migrations", "Run").Call(),
+					jen.Qual("github.com/"+pkg+"/"+migrationsDest, "Run").Call(),
 					jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("migrations applied")),
 				),
 			},
@@ -63,8 +103,6 @@ var Template = &cobra.Command{
 
 		c := []byte(fmt.Sprintf("%#v", m))
 
-		writeFileContent(cmdDest+"/migration.go", c)
-
-		logrus.Info("templates generated")
-	},
+		writeFileContent(dest, c)
+	}
 }

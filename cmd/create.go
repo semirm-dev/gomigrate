@@ -22,7 +22,7 @@ var Create = &cobra.Command{
 			logrus.Fatal("invalid migration name")
 		}
 
-		m := jen.NewFile("migrations")
+		m := jen.NewFile(migrationsDest)
 
 		m.Comment("Auto-generated file: https://github.com/semirm-dev/gomigrate")
 		m.Comment("Feel free to edit")
@@ -53,10 +53,10 @@ var Create = &cobra.Command{
 			jen.Return(jen.Lit(name)),
 		)
 
-		n := strings.ToLower(fmt.Sprint(ts) + "_" + name + ".go")
+		n := migrationsDest + "/" + strings.ToLower(fmt.Sprint(ts)+"_"+name+".go")
 		c := []byte(fmt.Sprintf("%#v", m))
 
-		writeFileContent(migrationsDest+"/"+n, c)
+		writeFileContent(n, c)
 
 		logrus.Info("migration created")
 	},

@@ -60,28 +60,6 @@ func copy(from string, to string) error {
 	return nil
 }
 
-func createMigrationInterface() {
-	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/migration.tpl"
-	dest := migrationsDest + "/migration.go"
-
-	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := downloadTpl(from, dest); err != nil {
-			logrus.Fatal("failed to get migration.tpl: ", err)
-		}
-	}
-}
-
-func createRegisterMigrationsCollection() {
-	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/registermigrations.tpl"
-	dest := migrationsDest + "/registermigrations.go"
-
-	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := downloadTpl(from, dest); err != nil {
-			logrus.Fatal("failed to get registermigrations.tpl: ", err)
-		}
-	}
-}
-
 func downloadTpl(path string, dest string) error {
 	resp, err := http.Get(path)
 	if err != nil {
