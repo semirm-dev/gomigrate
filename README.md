@@ -9,7 +9,7 @@ $ go install github.com/semirm-dev/gomigrate
 
 * generate required templates from your project root
 ```
-$ gomigrate tpl --pkg=my-github-username/my-project
+$ gomigrate tpl -p=my-github-username/my-project
 ```
 
 * create migration from your project root
