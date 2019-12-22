@@ -28,8 +28,10 @@ func Run() {
 		return Collection[i].Timestamp() < Collection[j].Timestamp()
 	})
 
+	migrations := getMigrationsHistory()
+
 	for _, c := range Collection {
-		if !applied(c) {
+		if !applied(c, migrations) {
 			c.Apply()
 
 			if err := saveMigrationHistory(c); err != nil {
@@ -39,9 +41,7 @@ func Run() {
 	}
 }
 
-func applied(mig Migration) bool {
-	migrations := getMigrationsHistory()
-
+func applied(mig Migration, migrations []*migration) bool {
 	for _, m := range migrations {
 		if mig.Timestamp() == m.Timestamp {
 			return true
