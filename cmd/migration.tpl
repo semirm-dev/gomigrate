@@ -3,6 +3,7 @@ package migrations
 import (
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	"github.com/semirm-dev/go-dev/env"
@@ -11,11 +12,6 @@ import (
 
 // Auto-generated file: https://github.com/semirm-dev/gomigrate
 // Feel free to edit
-
-type config struct {
-	Dialect    string
-	ConnString string
-}
 
 // Config for migrations
 var Config = &config{
@@ -30,16 +26,24 @@ var Config = &config{
 	),
 }
 
+type config struct {
+	Dialect    string
+	ConnString string
+}
+
 // Migration service
 type Migration interface {
+	Name() string
 	Apply()
 	Rollback()
 	Timestamp() int64
 }
 
 type migration struct {
+	ID        uint `gorm:"primary_key"`
 	Name      string
 	Timestamp int64
+	CreatedAt time.Time
 }
 
 // Run migrations collection
@@ -50,17 +54,19 @@ func Run() {
 	}
 	defer db.Close()
 
+	db.AutoMigrate(&migration{})
+
 	sort.Slice(Collection, func(i, j int) bool {
 		return Collection[i].Timestamp() < Collection[j].Timestamp()
 	})
 
-	migrations := getMigrationsHistory()
+	migrations := getMigrationsHistory(db)
 
 	for _, c := range Collection {
 		if !applied(c, migrations) {
 			c.Apply()
 
-			if err := saveMigrationHistory(c); err != nil {
+			if err := saveMigrationHistory(c, db); err != nil {
 				c.Rollback()
 			}
 		}
@@ -79,12 +85,17 @@ func applied(mig Migration, migrations []*migration) bool {
 
 // To implement!!
 
-func getMigrationsHistory() []*migration {
-	// implement, get migrations from database
-	return []*migration{}
+func getMigrationsHistory(db *gorm.DB) []*migration {
+	var migrations = []*migration{}
+
+	db.Find(&migrations)
+
+	return migrations
 }
 
-func saveMigrationHistory(migration Migration) error {
-	// implement, store migration in database
-	return nil
+func saveMigrationHistory(m Migration, db *gorm.DB) error {
+	return db.Create(&migration{
+		Name:      m.Name(),
+		Timestamp: m.Timestamp(),
+	}).Error
 }
