@@ -22,11 +22,12 @@ $ gomigrate create -m=MyMigration1
 var Collection = []Migration{&MyMigration1{}}
 ```
 
-* dont forget to execute migration command in main()
+* dont forget to execute migration command in main() and import database drivers
 ```go
 package main
 
 import (
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/my-user/my-project/cmd"
 )
 
