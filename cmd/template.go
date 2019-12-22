@@ -15,6 +15,8 @@ var Template = &cobra.Command{
 
 		createMigrationInterface()
 
+		createRegisterMigrationsCollection()
+
 		createCmdApply()
 
 		logrus.Info("templates generated")

@@ -84,6 +84,17 @@ func createCmdApply() {
 	}
 }
 
+func createRegisterMigrationsCollection() {
+	from := "https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/registermigrations.tpl"
+	dest := destination + "/registermigrations.go"
+
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		if err := downloadTpl(from, dest); err != nil {
+			logrus.Fatal("failed to get registermigrations.tpl: ", err)
+		}
+	}
+}
+
 func downloadTpl(path string, dest string) error {
 	resp, err := http.Get(path)
 	if err != nil {
