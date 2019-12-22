@@ -34,8 +34,8 @@ type config struct {
 // Migration service
 type Migration interface {
 	Name() string
-	Apply()
-	Rollback()
+	Apply(*gorm.DB)
+	Rollback(*gorm.DB)
 	Timestamp() int64
 }
 
@@ -64,10 +64,10 @@ func Run() {
 
 	for _, c := range Collection {
 		if !applied(c, migrations) {
-			c.Apply()
+			c.Apply(db)
 
 			if err := saveMigrationHistory(c, db); err != nil {
-				c.Rollback()
+				c.Rollback(db)
 			}
 		}
 	}
