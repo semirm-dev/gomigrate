@@ -9,7 +9,7 @@ $ go install github.com/semirm-dev/gomigrate
 
 * generate required templates from your project root
 ```
-$ gomigrate tpl
+$ gomigrate tpl --pkg=my-github-username/my-project
 ```
 
 * create migration from your project root
@@ -35,7 +35,7 @@ func main() {
 }
 ```
 
-* when ready apply migrations
+* when ready apply migrations from your project root
 ```sh
 $ go run main.go migrate
 ```
