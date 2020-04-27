@@ -41,5 +41,5 @@ $ go run main.go migrate
 
 
 #### TODO
-- [ ] Automate required appending to migrations.Collection
+- [ ] Automate manual appending to migrations.Collection
 - [ ] Support to run specific migration (up+down)
