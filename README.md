@@ -39,6 +39,8 @@ func main() {
 $ go run main.go migrate
 ```
 
+Example of scaffolded code: https://github.com/semirm-dev/spotted-core/tree/master/migrations
+
 
 #### TODO
 - [ ] Automate manual appending to migrations.Collection
