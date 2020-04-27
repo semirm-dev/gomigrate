@@ -1,5 +1,3 @@
-#### Migrations scaffolding with GORM, coded migrations
-
 #### Usage
 
 * install gomigrate tool
