@@ -40,3 +40,7 @@ func main() {
 ```sh
 $ go run main.go migrate
 ```
+
+
+#### TODO
+- [ ] Automate required appending to migrations.Collection
