@@ -1,4 +1,4 @@
-#### Migrations scaffolding
+#### Migrations scaffolding with GORM, coded migrations
 
 #### Usage
 
