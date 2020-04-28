@@ -18,11 +18,11 @@ var Config = &config{
 	Dialect: "postgres",
 	ConnString: fmt.Sprintf(
 		"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		env.Get("HOST", "localhost"),
-		env.Get("PORT", "5432"),
-		env.Get("DBNAME", "db_name"),
-		env.Get("USER", "postgres"),
-		env.Get("PASSWORD", "postgres"),
+		env.Get("M_HOST", "localhost"),
+		env.Get("M_PORT", "5432"),
+		env.Get("M_DBNAME", "db_name"),
+		env.Get("M_USER", "postgres"),
+		env.Get("M_PASSWORD", "postgres"),
 	),
 }
 
