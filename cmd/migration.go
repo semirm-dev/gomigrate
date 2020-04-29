@@ -5,10 +5,21 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
+	"time"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+const (
+	gomigrateLib = "github.com/semirm-dev/gomigrate/cmd"
+	goDevLib     = "github.com/semirm-dev/go-dev"
+	logrusLib    = "github.com/sirupsen/logrus"
+	gormLib      = "github.com/jinzhu/gorm"
+	cobraLib     = "github.com/spf13/cobra"
 )
 
 var (
@@ -23,6 +34,28 @@ var Migration = &cobra.Command{
 	Long:  `Migration tool`,
 }
 
+// MigrationDefinition for each migration
+type MigrationDefinition interface {
+	Name() string
+	Apply(*gorm.DB)
+	Rollback(*gorm.DB)
+	Timestamp() int64
+}
+
+// Config for database connection
+type Config struct {
+	Dialect    string
+	ConnString string
+}
+
+// migration represents single row in migrations table
+type migration struct {
+	ID        uint `gorm:"primary_key"`
+	Name      string
+	Timestamp int64
+	CreatedAt time.Time
+}
+
 func init() {
 	if err := createPathIfNotExists(migrationsDest); err != nil {
 		logrus.Fatalf("failed to create %s destination: %v", migrationsDest, err)
@@ -34,6 +67,64 @@ func init() {
 
 	Migration.AddCommand(Create)
 	Migration.AddCommand(Template)
+}
+
+// Run migrations collection
+func Run(collection []MigrationDefinition, config *Config) {
+	db, err := gorm.Open(config.Dialect, config.ConnString)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	defer db.Close()
+
+	db.AutoMigrate(&migration{})
+
+	sort.Slice(collection, func(i, j int) bool {
+		return collection[i].Timestamp() < collection[j].Timestamp()
+	})
+
+	migrations := getMigrationsHistory(db)
+
+	for _, c := range collection {
+		if !applied(c, migrations) {
+			c.Apply(db)
+
+			if err := saveMigrationHistory(c, db); err != nil {
+				logrus.Warnf("migration %s failed to apply", c.Name())
+
+				c.Rollback(db)
+
+				break
+			}
+
+			logrus.Infof("migration %s applied", c.Name())
+		}
+	}
+}
+
+func applied(mig MigrationDefinition, migrations []*migration) bool {
+	for _, m := range migrations {
+		if mig.Timestamp() == m.Timestamp {
+			return true
+		}
+	}
+
+	return false
+}
+
+func getMigrationsHistory(db *gorm.DB) []*migration {
+	var migrations = []*migration{}
+
+	db.Find(&migrations)
+
+	return migrations
+}
+
+func saveMigrationHistory(m MigrationDefinition, db *gorm.DB) error {
+	return db.Create(&migration{
+		Name:      m.Name(),
+		Timestamp: m.Timestamp(),
+	}).Error
 }
 
 func createPathIfNotExists(path string) error {

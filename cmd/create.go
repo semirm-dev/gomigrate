@@ -30,13 +30,13 @@ var Create = &cobra.Command{
 		m.Type().Id(name).Struct()
 
 		m.Comment("Apply migration")
-		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Apply").Params(jen.Id("db").Op("*").Qual("github.com/jinzhu/gorm", "DB")).Block(
-			jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("Applying migration")),
+		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Apply").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Block(
+			jen.Qual(logrusLib, "Info").Call(jen.Lit("Applying migration")),
 		)
 
 		m.Comment("Rollback migration")
-		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Rollback").Params(jen.Id("db").Op("*").Qual("github.com/jinzhu/gorm", "DB")).Block(
-			jen.Qual("github.com/sirupsen/logrus", "Info").Call(jen.Lit("Rolling back migration")),
+		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Rollback").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Block(
+			jen.Qual(logrusLib, "Info").Call(jen.Lit("Rolling back migration")),
 		)
 
 		ts := time.Now().Unix()
@@ -56,6 +56,6 @@ var Create = &cobra.Command{
 
 		writeFileContent(n, c)
 
-		logrus.Info("migration created")
+		logrus.Infof("migration %s created", name)
 	},
 }
