@@ -22,8 +22,6 @@ var Template = &cobra.Command{
 
 		createConfigFile("https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/config.yml", cmdDest+"/config.yml")
 
-		parseConfigFile(cmdDest + "/config.yml")
-
 		createRegisterMigrationsCollection()
 
 		createApplyCmd(cmd)
@@ -97,7 +95,8 @@ func createApplyCmd(cmd *cobra.Command) {
 				jen.Id("Short"): jen.Lit("Apply migrations"),
 				jen.Id("Long"):  jen.Lit("`Apply migrations`"),
 				jen.Id("Run"): jen.Func().Params(jen.Id("cmd").Op("*").Qual(cobraLib, "Command"), jen.Id("agrs").Index().String()).Block(
-					jen.Qual(gomigrateLib, "Run").Call(jen.Qual(pkg+"/"+migrationsDest, "Collection")),
+					jen.Id("config").Op(":=").Qual(gomigrateLib, "ParseConfig").Call(jen.Lit(cmdDest+"/config.yml")),
+					jen.Qual(gomigrateLib, "Run").Call(jen.Qual(pkg+"/"+migrationsDest, "Collection"), jen.Id("config")),
 					jen.Qual(logrusLib, "Info").Call(jen.Lit("migrations script finished")),
 				),
 			},

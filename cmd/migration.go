@@ -26,9 +26,6 @@ var (
 	cmdDest        = "cmd"
 )
 
-// Conf exposes configuration, config.yml
-var Conf = Config{}
-
 // Migration root command
 var Migration = &cobra.Command{
 	Use:   "",
@@ -61,8 +58,8 @@ type migration struct {
 }
 
 // Run migrations collection
-func Run(collection []MigrationDefinition) {
-	db, err := gorm.Open(Conf.Database.Dialect, Conf.Database.ConnString)
+func Run(collection []MigrationDefinition, conf Config) {
+	db, err := gorm.Open(conf.Database.Dialect, conf.Database.ConnString)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -99,6 +96,23 @@ func Run(collection []MigrationDefinition) {
 			logrus.Infof("migration %s applied", c.Name())
 		}
 	}
+}
+
+// ParseConfig file
+func ParseConfig(path string) Config {
+	configYml, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatalf("failed to read config.yml: %v", err)
+	}
+
+	config := Config{}
+
+	err = yaml.Unmarshal(configYml, &config)
+	if err != nil {
+		logrus.Fatalf("failed to unmarshal config.yml: %v", err)
+	}
+
+	return config
 }
 
 func applied(mig MigrationDefinition, migrations []*migration) bool {
@@ -139,18 +153,6 @@ func createPath(paths ...string) {
 				logrus.Fatalf("failed to create %s directory: %v", path, err)
 			}
 		}
-	}
-}
-
-func parseConfigFile(path string) {
-	configYml, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatalf("failed to read config.yml: %v", err)
-	}
-
-	err = yaml.Unmarshal(configYml, &Conf)
-	if err != nil {
-		logrus.Fatalf("failed to unmarshal config.yml: %v", err)
 	}
 }
 
