@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	createPathIfNotExists(migrationsDest, cmdDest)
+	createPath(migrationsDest, cmdDest)
 
 	createConfigFile("https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/config.yml", cmdDest+"/config.yml")
 
@@ -24,16 +24,6 @@ func init() {
 	createApplyCmd()
 
 	Migration.AddCommand(Create)
-}
-
-func createPathIfNotExists(paths ...string) {
-	for _, path := range paths {
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			if err := os.MkdirAll(path, os.ModePerm); err != nil {
-				logrus.Fatalf("failed to create %s directory: %v", path, err)
-			}
-		}
-	}
 }
 
 func createConfigFile(src, dest string) {

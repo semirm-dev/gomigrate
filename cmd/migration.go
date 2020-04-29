@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"io/ioutil"
+	"os"
 	"sort"
 	"time"
 
@@ -128,6 +129,16 @@ func saveMigrationHistory(m MigrationDefinition, db *gorm.DB) error {
 func writeFileContent(path string, content []byte) {
 	if err := ioutil.WriteFile(path, content, 0644); err != nil {
 		logrus.Fatal("write content to file failed: ", err)
+	}
+}
+
+func createPath(paths ...string) {
+	for _, path := range paths {
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			if err := os.MkdirAll(path, os.ModePerm); err != nil {
+				logrus.Fatalf("failed to create %s directory: %v", path, err)
+			}
+		}
 	}
 }
 
