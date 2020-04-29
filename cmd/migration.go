@@ -56,19 +56,6 @@ type migration struct {
 	CreatedAt time.Time
 }
 
-func init() {
-	if err := createPathIfNotExists(migrationsDest); err != nil {
-		logrus.Fatalf("failed to create %s destination: %v", migrationsDest, err)
-	}
-
-	if err := createPathIfNotExists(cmdDest); err != nil {
-		logrus.Fatalf("failed to create %s destination: %v", cmdDest, err)
-	}
-
-	Migration.AddCommand(Create)
-	Migration.AddCommand(Template)
-}
-
 // Run migrations collection
 func Run(collection []MigrationDefinition, config *Config) {
 	db, err := gorm.Open(config.Dialect, config.ConnString)
