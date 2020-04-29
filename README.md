@@ -7,8 +7,10 @@ $ go install github.com/semirm-dev/gomigrate
 
 * generate required templates from your project root
 ```
-$ gomigrate tpl -p=my-github-username/my-project
+$ gomigrate tpl
 ```
+
+* modify created config.yml
 
 * create migration from your project root
 ```
@@ -35,7 +37,6 @@ func main() {
 ```
 
 * when ready apply migrations from your project root
-> verify database connection in cmd.config
 ```sh
 $ go run main.go migrate
 ```
