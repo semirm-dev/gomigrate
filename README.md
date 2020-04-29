@@ -1,5 +1,4 @@
-#### Usage
-
+#### Setup
 * install gomigrate tool
 ```sh
 $ go install github.com/semirm-dev/gomigrate
@@ -10,8 +9,23 @@ $ go install github.com/semirm-dev/gomigrate
 $ gomigrate tpl
 ```
 
-* modify created config.yml
+* modify created **_config.yml_**
 
+* import database drivers in your main() and execute Migration cmd
+```go
+package main
+
+import (
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/my-github-username/my-project/cmd"
+)
+
+func main() {
+    cmd.Migration.Execute()
+}
+```
+
+### Usage
 * create migration from your project root
 ```
 $ gomigrate create -m=MyMigration1
@@ -20,20 +34,6 @@ $ gomigrate create -m=MyMigration1
 * append migrations.Collection with previously created migration
 ```go
 var Collection = []gomigrateCmd.MigrationDefinition{&MyMigration1{}}
-```
-
-* dont forget to execute migration command in main() and import database drivers
-```go
-package main
-
-import (
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/my-user/my-project/cmd"
-)
-
-func main() {
-    cmd.Migration.Execute()
-}
 ```
 
 * when ready apply migrations from your project root
