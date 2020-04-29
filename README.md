@@ -6,7 +6,7 @@ $ go install github.com/semirm-dev/gomigrate
 
 * generate required templates from your project root
 ```
-$ gomigrate tpl
+$ gomigrate tpl -p=github.com/my-github-username/my-project
 ```
 
 * modify created **_cmd/config.yml_**
