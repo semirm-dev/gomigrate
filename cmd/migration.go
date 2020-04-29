@@ -45,7 +45,6 @@ type MigrationDefinition interface {
 
 // Config for database connection
 type Config struct {
-	Pkg      string `yaml:"pkg"`
 	Database struct {
 		Dialect    string `yaml:"dialect"`
 		ConnString string `yaml:"connstring"`

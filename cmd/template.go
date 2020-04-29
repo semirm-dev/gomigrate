@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/dave/jennifer/jen"
 	"github.com/sirupsen/logrus"
@@ -27,7 +28,7 @@ var Template = &cobra.Command{
 
 		createRegisterMigrationsCollection()
 
-		createApplyCmd()
+		createApplyCmd(cmd)
 
 		logrus.Info("templates generated")
 	},
@@ -73,10 +74,16 @@ func createRegisterMigrationsCollection() {
 	}
 }
 
-func createApplyCmd() {
+func createApplyCmd(cmd *cobra.Command) {
 	dest := cmdDest + "/migration.go"
 
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		var pkg = cmd.Flag("pkg").Value.String()
+
+		if strings.TrimSpace(pkg) == "" {
+			logrus.Fatal("invalid github package url")
+		}
+
 		m := jen.NewFile(cmdDest)
 
 		m.ImportAlias(gomigrateLib, "gomigrateLib")
@@ -104,7 +111,7 @@ func createApplyCmd() {
 				jen.Id("Short"): jen.Lit("Apply migrations"),
 				jen.Id("Long"):  jen.Lit("`Apply migrations`"),
 				jen.Id("Run"): jen.Func().Params(jen.Id("cmd").Op("*").Qual(cobraLib, "Command"), jen.Id("agrs").Index().String()).Block(
-					jen.Qual(gomigrateLib, "Run").Call(jen.Qual(Conf.Pkg+"/"+migrationsDest, "Collection")),
+					jen.Qual(gomigrateLib, "Run").Call(jen.Qual(pkg+"/"+migrationsDest, "Collection")),
 					jen.Qual(logrusLib, "Info").Call(jen.Lit("migrations script finished")),
 				),
 			},
