@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -11,7 +10,6 @@ import (
 	"github.com/dave/jennifer/jen"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 // Template migration command
@@ -23,8 +21,6 @@ var Template = &cobra.Command{
 		createPath(migrationsDest, cmdDest)
 
 		createConfigFile("https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/config.yml", cmdDest+"/config.yml")
-
-		parseConfigFile(cmdDest + "/config.yml")
 
 		createRegisterMigrationsCollection()
 
@@ -41,18 +37,6 @@ func createConfigFile(src, dest string) {
 		}
 	}
 
-}
-
-func parseConfigFile(path string) {
-	configYml, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatalf("failed to read config.yml: %v", err)
-	}
-
-	err = yaml.Unmarshal(configYml, &Conf)
-	if err != nil {
-		logrus.Fatalf("failed to unmarshal config.yml: %v", err)
-	}
 }
 
 func createRegisterMigrationsCollection() {

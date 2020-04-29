@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -138,6 +139,18 @@ func createPath(paths ...string) {
 				logrus.Fatalf("failed to create %s directory: %v", path, err)
 			}
 		}
+	}
+}
+
+func parseConfigFile(path string) {
+	configYml, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatalf("failed to read config.yml: %v", err)
+	}
+
+	err = yaml.Unmarshal(configYml, &Conf)
+	if err != nil {
+		logrus.Fatalf("failed to unmarshal config.yml: %v", err)
 	}
 }
 
