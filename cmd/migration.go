@@ -37,8 +37,8 @@ var Migration = &cobra.Command{
 // MigrationDefinition for each migration
 type MigrationDefinition interface {
 	Name() string
-	Apply(*gorm.DB)
-	Rollback(*gorm.DB)
+	Apply(*gorm.DB) error
+	Rollback(*gorm.DB) error
 	Timestamp() int64
 }
 
@@ -87,12 +87,20 @@ func Run(collection []MigrationDefinition, config *Config) {
 
 	for _, c := range collection {
 		if !applied(c, migrations) {
-			c.Apply(db)
+			if err := c.Apply(db); err != nil {
+				logrus.Errorf("migration %s failed to apply: %v", c.Name(), err)
+				break
+			}
 
 			if err := saveMigrationHistory(c, db); err != nil {
-				logrus.Warnf("migration %s failed to apply", c.Name())
+				logrus.Warnf("failed to record migration %s: %v", c.Name(), err)
 
-				c.Rollback(db)
+				if err := c.Rollback(db); err != nil {
+					logrus.Errorf("migration %s failed to rollback: %v", c.Name(), err)
+					break
+				}
+
+				logrus.Warnf("migration %s rolled back", c.Name())
 
 				break
 			}

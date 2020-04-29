@@ -92,7 +92,7 @@ func createApplyCmd(cmd *cobra.Command) {
 				jen.Id("Long"):  jen.Lit("`Apply migrations`"),
 				jen.Id("Run"): jen.Func().Params(jen.Id("cmd").Op("*").Qual(cobraLib, "Command"), jen.Id("agrs").Index().String()).Block(
 					jen.Qual(gomigrateLib, "Run").Call(jen.Qual("github.com/"+pkg+"/"+migrationsDest, "Collection"), jen.Id("config")),
-					jen.Qual(logrusLib, "Info").Call(jen.Lit("migrations finished")),
+					jen.Qual(logrusLib, "Info").Call(jen.Lit("migrations script finished")),
 				),
 			},
 		)

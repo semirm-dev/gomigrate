@@ -30,13 +30,15 @@ var Create = &cobra.Command{
 		m.Type().Id(name).Struct()
 
 		m.Comment("Apply migration")
-		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Apply").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Block(
+		m.Func().Params(jen.Id("mig").Id("*"+name)).Id("Apply").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Error().Block(
 			jen.Qual(logrusLib, "Info").Call(jen.Lit("Applying migration")),
+			jen.Return(jen.Nil()),
 		)
 
 		m.Comment("Rollback migration")
-		m.Func().Params(jen.Id("mig").Id("*" + name)).Id("Rollback").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Block(
+		m.Func().Params(jen.Id("mig").Id("*"+name)).Id("Rollback").Params(jen.Id("db").Op("*").Qual(gormLib, "DB")).Error().Block(
 			jen.Qual(logrusLib, "Info").Call(jen.Lit("Rolling back migration")),
+			jen.Return(jen.Nil()),
 		)
 
 		ts := time.Now().Unix()
