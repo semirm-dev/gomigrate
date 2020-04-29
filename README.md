@@ -17,7 +17,7 @@ $ gomigrate create -m=MyMigration1
 
 * append migrations.Collection with previously created migration
 ```go
-var Collection = []Migration{&MyMigration1{}}
+var Collection = []gomigrateCmd.MigrationDefinition{&MyMigration1{}}
 ```
 
 * dont forget to execute migration command in main() and import database drivers
@@ -35,6 +35,7 @@ func main() {
 ```
 
 * when ready apply migrations from your project root
+> verify database connection in cmd.config
 ```sh
 $ go run main.go migrate
 ```
