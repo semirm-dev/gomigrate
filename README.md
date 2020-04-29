@@ -9,7 +9,7 @@ $ go install github.com/semirm-dev/gomigrate
 $ gomigrate tpl
 ```
 
-* modify created **_config.yml_**
+* modify created **_cmd/config.yml_**
 
 * import database drivers in your main() and execute Migration cmd
 ```go
