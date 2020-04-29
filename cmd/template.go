@@ -22,6 +22,8 @@ var Template = &cobra.Command{
 
 		createConfigFile("https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/config.yml", cmdDest+"/config.yml")
 
+		parseConfigFile(cmdDest + "/config.yml")
+
 		createRegisterMigrationsCollection()
 
 		createApplyCmd(cmd)
