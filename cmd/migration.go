@@ -27,6 +27,9 @@ var (
 	cmdDest        = "cmd"
 )
 
+// Conf exposes configuration, config.yml
+var Conf = Config{}
+
 // Migration root command
 var Migration = &cobra.Command{
 	Use:   "",
@@ -44,8 +47,11 @@ type MigrationDefinition interface {
 
 // Config for database connection
 type Config struct {
-	Dialect    string
-	ConnString string
+	Pkg      string `yaml:"pkg"`
+	Database struct {
+		Dialect    string `yaml:"dialect"`
+		ConnString string `yaml:"connstring"`
+	} `yaml:"database"`
 }
 
 // migration represents single row in migrations table
@@ -57,8 +63,8 @@ type migration struct {
 }
 
 // Run migrations collection
-func Run(collection []MigrationDefinition, config *Config) {
-	db, err := gorm.Open(config.Dialect, config.ConnString)
+func Run(collection []MigrationDefinition) {
+	db, err := gorm.Open(Conf.Database.Dialect, Conf.Database.ConnString)
 	if err != nil {
 		logrus.Fatal(err)
 	}

@@ -16,9 +16,9 @@ var Create = &cobra.Command{
 	Short: "Create migration",
 	Long:  `Create migration`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var name = cmd.Flag("migration").Value.String()
+		var name = strings.TrimSpace(cmd.Flag("migration").Value.String())
 
-		if strings.TrimSpace(name) == "" {
+		if name == "" {
 			logrus.Fatal("invalid migration name")
 		}
 
