@@ -146,11 +146,11 @@ func writeFileContent(path string, content []byte) {
 	}
 }
 
-func createPath(paths ...string) {
-	for _, path := range paths {
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			if err := os.MkdirAll(path, os.ModePerm); err != nil {
-				logrus.Fatalf("failed to create %s directory: %v", path, err)
+func createPath(path ...string) {
+	for _, p := range path {
+		if _, err := os.Stat(p); os.IsNotExist(err) {
+			if err := os.MkdirAll(p, os.ModePerm); err != nil {
+				logrus.Fatalf("failed to create %s directory: %v", p, err)
 			}
 		}
 	}
