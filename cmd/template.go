@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"strings"
 
@@ -22,26 +20,15 @@ var Template = &cobra.Command{
 
 		createConfigFile("https://raw.githubusercontent.com/semirm-dev/gomigrate/master/cmd/config.yml", cmdDest+"/config.yml")
 
-		createRegisterMigrationsCollection()
+		createRegisterMigrationsCollection(migrationsDest + "/registermigrations.go")
 
-		createApplyCmd(cmd)
+		createApplyCmd(cmd, cmdDest+"/migration.go", cmdDest+"/config.yml")
 
 		logrus.Info("templates generated")
 	},
 }
 
-func createConfigFile(src, dest string) {
-	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		if err := downloadFile(src, dest); err != nil {
-			logrus.Fatal("failed to get config.yml: ", err)
-		}
-	}
-
-}
-
-func createRegisterMigrationsCollection() {
-	dest := migrationsDest + "/registermigrations.go"
-
+func createRegisterMigrationsCollection(dest string) {
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
 		m := jen.NewFile(migrationsDest)
 
@@ -58,14 +45,12 @@ func createRegisterMigrationsCollection() {
 	}
 }
 
-func createApplyCmd(cmd *cobra.Command) {
-	dest := cmdDest + "/migration.go"
-
+func createApplyCmd(cmd *cobra.Command, dest, configYmlDest string) {
 	if _, err := os.Stat(dest); os.IsNotExist(err) {
-		var pkg = cmd.Flag("pkg").Value.String()
+		var pkg = strings.TrimSpace(cmd.Flag("pkg").Value.String())
 
-		if strings.TrimSpace(pkg) == "" {
-			logrus.Fatal("invalid github package url")
+		if pkg == "" {
+			logrus.Fatal("missing github package url")
 		}
 
 		m := jen.NewFile(cmdDest)
@@ -95,7 +80,7 @@ func createApplyCmd(cmd *cobra.Command) {
 				jen.Id("Short"): jen.Lit("Apply migrations"),
 				jen.Id("Long"):  jen.Lit("`Apply migrations`"),
 				jen.Id("Run"): jen.Func().Params(jen.Id("cmd").Op("*").Qual(cobraLib, "Command"), jen.Id("agrs").Index().String()).Block(
-					jen.Id("config").Op(":=").Qual(gomigrateLib, "ParseConfig").Call(jen.Lit(cmdDest+"/config.yml")),
+					jen.Id("config").Op(":=").Qual(gomigrateLib, "ParseConfig").Call(jen.Lit(configYmlDest)),
 					jen.Qual(gomigrateLib, "Run").Call(jen.Qual(pkg+"/"+migrationsDest, "Collection"), jen.Id("config")),
 					jen.Qual(logrusLib, "Info").Call(jen.Lit("migrations script finished")),
 				),
@@ -106,22 +91,4 @@ func createApplyCmd(cmd *cobra.Command) {
 
 		writeFileContent(dest, c)
 	}
-}
-
-func downloadFile(src string, dest string) error {
-	resp, err := http.Get(src)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	out, err := os.Create(dest)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, resp.Body)
-
-	return err
 }
