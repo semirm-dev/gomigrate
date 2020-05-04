@@ -17,7 +17,7 @@ import (
 
 const (
 	gomigrateLib = "github.com/semirm-dev/gomigrate/cmd"
-	goDevLib     = "github.com/semirm-dev/go-dev"
+	goDevLib     = "github.com/semirm-dev/godev"
 	logrusLib    = "github.com/sirupsen/logrus"
 	gormLib      = "github.com/jinzhu/gorm"
 	cobraLib     = "github.com/spf13/cobra"
